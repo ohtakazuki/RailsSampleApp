@@ -7,6 +7,12 @@ Rails.application.routes.draw do
   # 以下を追加し、new.htmlのpost先をsignup_pathにする。
   # controllerでrender newしているのでテストはGREEN
   post '/signup', to:'users#create'
+
+  # ログイン用
+  get '/login',     to:'sessions#new'
+  post '/login',    to:'sessions#create'
+  delete '/logout', to:'sessions#destroy'
+
   # これでフル機能のRESTが使えるようになる
   resources :users
 end

@@ -17,4 +17,14 @@ class User < ApplicationRecord
   
   # パスワードの存在、最小文字数
   validates :password, presence: true, length: { minimum: 6 }
+
+  # 渡された文字列のハッシュ値を返す。Userに関することだからここで
+  #   integration test で パスワードダイジェストを作る時
+  #   9.1.1 記憶トークンを暗号化する時
+  def User.digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
+                                                  BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost)
+  end
+
 end

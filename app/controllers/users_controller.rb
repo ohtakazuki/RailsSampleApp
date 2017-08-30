@@ -14,6 +14,8 @@ class UsersController < ApplicationController
     # @user = User.new(params[:user])
     @user = User.new(user_params)
     if @user.save
+      # 登録と共にログインさせる
+      log_in @user
       # flash による次画面でのメッセージ表示
       flash[:success] = "ユーザを登録しました。ようこそ Sample App へ！"
       redirect_to @user
