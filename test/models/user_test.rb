@@ -91,6 +91,6 @@ class UserTest < ActiveSupport::TestCase
   # ----------------------------------------
   # ２つブラウザで片方でログアウトするとdigestがnilになる。その時authenticated?がfalseを返すか
   test "authenticated? should return false for a user with nil digest" do
-    assert_not @user.authenticated?('')
+    assert_not @user.authenticated?(:remember, '')
   end
 end

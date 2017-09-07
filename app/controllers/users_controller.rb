@@ -5,12 +5,13 @@ class UsersController < ApplicationController
 
   def index
     # パラメタ:pageはwill_paginateによって自動生成される
-    @users = User.paginate(page: params[:page])
+    @users = User.where(activated: true).paginate(page: params[:page])
   end
   
   def show
     # viewに渡す
     @user = User.find(params[:id])
+    #redirect_to root_url and return unless !@user.activated?
   end
 
   def new
@@ -23,11 +24,16 @@ class UsersController < ApplicationController
     # @user = User.new(params[:user])
     @user = User.new(user_params)
     if @user.save
-      # 登録と共にログインさせる
-      log_in @user
-      # flash による次画面でのメッセージ表示
-      flash[:success] = "ユーザを登録しました。ようこそ Sample App へ！"
-      redirect_to @user
+      # メール認証による変更
+      # # 登録と共にログインさせる
+      # log_in @user
+      # # flash による次画面でのメッセージ表示
+      # flash[:success] = "ユーザを登録しました。ようこそ Sample App へ！"
+      # redirect_to @user
+      @user.send_activation_email
+      flash[:info] = "Please check your email to activate your account."
+      redirect_to root_url
+
     else
       render 'new'
     end

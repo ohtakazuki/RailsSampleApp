@@ -15,4 +15,7 @@ Rails.application.routes.draw do
 
   # これでフル機能のRESTが使えるようになる
   resources :users
+  
+  # メールで受け取るのでGETのeditのみ
+  resources :account_activations, only: [:edit]
 end
