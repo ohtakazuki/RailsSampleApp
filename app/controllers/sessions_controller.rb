@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
       log_in @user
       # helperのrememberを呼ぶ。チェックしたときだけ
       params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)
-      redirect_to @user
+      redirect_back_or @user
     else
       #失敗 ログイン画面を再表示してエラーメッセージを表示する
       # flash.now リクエストが発生した時に消滅する
