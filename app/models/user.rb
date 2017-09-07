@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  # 仮想項目 remember_token を書くためにアクセス可能な属性を定義する
+  attr_accessor :remember_token
+  
   # 保存前にメールアドレスを全部小文字にする
   # ruby側では以下の uniqueness: { case_sensitive: false } で大文字小文字を無視できるが
   # データベース側(add_index)では無視できないため
@@ -27,4 +30,28 @@ class User < ApplicationRecord
     BCrypt::Password.create(string, cost: cost)
   end
 
+  # ランダムなトークンを返す
+  #   記憶トークン用
+  def User.new_token
+    SecureRandom.urlsafe_base64
+  end
+  
+  # 永続セッションのためにユーザをデータベースに記憶する
+  def remember
+    # self:ローカル変数でなくインスタンス変数に値を設定する
+    self.remember_token = User.new_token
+    # ダイジェストを更新
+    update_attribute(:remember_digest, User.digest(remember_token))
+  end
+  
+  # 渡されたトークンがダイジェストと一致したらtrueを返す
+  def authenticated?(remember_token)
+    return false if remember_digest.nil?
+    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  end
+
+  # ユーザのログイン情報を破棄する
+  def forget
+    update_attribute(:remember_digest, nil)
+  end
 end
