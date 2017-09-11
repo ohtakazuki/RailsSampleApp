@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   # 仮想項目 remember_token を書くためにアクセス可能な属性を定義する
-  attr_accessor :remember_token, :activation_token
+  attr_accessor :remember_token, :activation_token, :reset_token
 
   # 保存前にメールアドレスを全部小文字にする
   # ruby側では以下の uniqueness: { case_sensitive: false } で大文字小文字を無視できるが
@@ -77,6 +77,26 @@ class User < ApplicationRecord
   # 有効化用のメールを送信する
   def send_activation_email
     UserMailer.account_activation(self).deliver_now
+  end
+  
+  # パスワード再設定の属性を設定する
+  def create_reset_digest
+    self.reset_token = User.new_token
+    # 12.20 1行にまとめて書ける
+    # update_attribute(:reset_digest, User.digest(reset_token))
+    # update_attribute(:reset_sent_at, Time.zone.now)
+    update_columns(reset_digest: User.digest(reset_token), reset_sent_at: Time.zone.now)
+  end
+  
+  # パスワード再設定のメールを送信する
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
+  end
+  
+  # パスワード再設定の期限切れならtrue
+  def password_reset_expired?
+    # ２時間より前
+    reset_sent_at < 2.hours.ago
   end
 
   private 
