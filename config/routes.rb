@@ -16,6 +16,14 @@ Rails.application.routes.draw do
   get '/login',     to:'sessions#new'
   post '/login',    to:'sessions#create'
   delete '/logout', to:'sessions#destroy'
+  
+  # /users/1/following や /users/1/followers のようにする
+  resources :users do
+    # member idが含まれるURLを返す(集合はcollection)
+    member do
+      get :following, :followers
+    end
+  end
 
   # これでフル機能のRESTが使えるようになる
   resources :users
@@ -28,4 +36,7 @@ Rails.application.routes.draw do
   
   # マイクロポスト
   resources :microposts,      only: [:create, :destroy]
+  
+  # フォロー
+  resources :relationships,   only: [:create, :destroy]
 end
