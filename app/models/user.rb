@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  # micropostとの関連付け
+  has_many :microposts, dependent: :destroy
+
   # 仮想項目 remember_token を書くためにアクセス可能な属性を定義する
   attr_accessor :remember_token, :activation_token, :reset_token
 
@@ -97,6 +100,11 @@ class User < ApplicationRecord
   def password_reset_expired?
     # ２時間より前
     reset_sent_at < 2.hours.ago
+  end
+  
+  # 試作feedの定義
+  def feed
+    Micropost.where("user_id = ? ", id)
   end
 
   private 
